@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Renato y Benja Gebra</title>
+<style>
+body{
+	font-family: Arial, sans-serif;
+	margin: 20px;
+}
+h1{
+	font-size: 22px;
+	margin: 0 0 4px 0;
+}
+.pestañas{
+	margin: 20px 0 10px 0;
+}
+.pestaña{
+	font-family: Arial, sans-serif;
+	font-size: 13px;
+	padding: 5px 10px;
+	margin: 0 6px 6px 0;
+	border: 1px solid #999999;
+	background: #f0f0f0;
+	cursor: pointer;
+	display: inline-block;
+}
+.pestaña.activa{
+	background: #dddddd;
+	font-weight: bold;
+}
+main{
+	display: none;
+}
+main.activo{
+	display: block;
+}
+.zona-canvas{
+	border: 1px solid #999999;
+	box-shadow: 1px 1px #cccccc;
+	padding: 10px;
+	width: 620px;
+	max-width: 100%;
+	margin-bottom: 20px;
+}
+.panel{
+	max-width: 620px;
+}
+.tarjeta{
+	width: 300px;
+	margin: 0 0 20px 0;
+	border: 1px solid #999999;
+	box-shadow: 1px 1px #cccccc;
+	padding: 10px;
+}
+.tarjeta h2{
+	font-size: 14px;
+	margin: 0 0 10px 0;
+}
+.tarjeta p{
+	font-size: 13px;
+	margin: 0;
+}
+.control{
+	margin-bottom: 14px;
+}
+.control label{
+	display: block;
+	margin-bottom: 4px;
+	font-size: 13px;
+}
+.control label .valor{
+	font-weight: bold;
+}
+input[type=range]{
+	width: 100%;
+}
+.filas{
+	margin-bottom: 4px;
+}
+.fila{
+	display: flex;
+	justify-content: space-between;
+	padding: 4px 0;
+	font-size: 13px;
+	border-bottom: 1px solid #eeeeee;
+}
+.marcador{
+	width: 10px;
+	height: 10px;
+	display: inline-block;
+	margin-right: 6px;
+}
+.resultado-final{
+	text-align: left;
+}
+.resultado-final .ecuacion{
+	font-size: 16px;
+}
+.resultado-final .comentario{
+	margin-top: 8px;
+	font-size: 13px;
+	color: #555555;
+}
+.boton{
+	font-family: Arial, sans-serif;
+	font-size: 13px;
+	padding: 5px 12px;
+	margin: 0 8px 8px 0;
+	display: inline-block;
+	cursor: pointer;
+	border: 1px solid #999999;
+	background: #f0f0f0;
+}
+.fila-botones{
+	margin-bottom: 0;
+}
+input[type=number], input[type=text]{
+	font-family: Arial, sans-serif;
+	font-size: 13px;
+	padding: 4px;
+	width: 200px;
+	display: block;
+	margin-bottom: 10px;
+}
+.mensaje{
+	font-size: 13px;
+	margin-top: 8px;
+}
+.mensaje.ok{color: #227722;}
+.mensaje.mal{color: #aa0000;}
+footer{
+	margin-top: 30px;
+	font-size: 12px;
+	color: #777777;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="encabezado-superior">
+    <div class="titulo-proyecto">
+      <h1>Renato y Benja Gebra</h1>
+    </div>
+  </div>
+</header>
+
+<div class="pestañas" id="pestañas">
+  <div class="pestaña activa" data-modo="explorar">Explorar</div>
+  <div class="pestaña" data-modo="adivina">Adivina la hipotenusa</div>
+  <div class="pestaña" data-modo="escalera">Escalera del gato</div>
+  <div class="pestaña" data-modo="raiz">Calculadora de raíz</div>
+</div>
+
+<main class="activo" id="modo-explorar">
+  <div class="zona-canvas">
+    <svg id="lienzo" viewBox="0 0 640 560" width="100%" height="100%" style="max-width:620px;"></svg>
+  </div>
+
+  <div class="panel">
+    <div class="tarjeta">
+      <h2>Cambiar el tamaño del cateto:</h2>
+      <div class="control">
+        <label>Cateto a <span class="valor" id="valorA">3.0</span></label>
+        <input type="range" id="sliderA" min="1" max="6" step="0.1" value="3">
+      </div>
+      <div class="control">
+        <label>Cateto b <span class="valor" id="valorB">4.0</span></label>
+        <input type="range" id="sliderB" min="1" max="6" step="0.1" value="4">
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h2>Area de Los cuadrados:</h2>
+      <div class="filas">
+        <div class="fila">
+          <span class="etiqueta"><span class="marcador" style="background:var(--rojo)"></span>a²</span>
+          <span class="valor-area" id="areaA">9.00</span>
+        </div>
+        <div class="fila">
+          <span class="etiqueta"><span class="marcador" style="background:var(--salvia)"></span>b²</span>
+          <span class="valor-area" id="areaB">16.00</span>
+        </div>
+        <div class="fila">
+          <span class="etiqueta"><span class="marcador" style="background:var(--mostaza)"></span>c²</span>
+          <span class="valor-area" id="areaC">25.00</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tarjeta resultado-final">
+      <div class="ecuacion" id="ecuacion">3.00² + 4.00² = 5.00²</div>
+      <div class="comentario">"cateto al cuadrado + cateto al cuadrado = hipotenusa al cuadrado" ~Profesor basti </div>
+    </div>
+  </div>
+</main>
+
+<main id="modo-adivina">
+  <div class="zona-canvas">
+    <svg id="lienzoAdivina" viewBox="0 0 640 560" width="100%" height="100%" style="max-width:620px;"></svg>
+  </div>
+  <div class="panel">
+    <div class="tarjeta">
+      <h2>Adivina la hipotenusa:</h2>
+      <div class="control">
+        <label>Cateto a <span class="valor" id="valorA2">3.0</span></label>
+        <input type="range" id="sliderA2" min="1" max="6" step="0.1" value="3">
+      </div>
+      <div class="control">
+        <label>Cateto b <span class="valor" id="valorB2">4.0</span></label>
+        <input type="range" id="sliderB2" min="1" max="6" step="0.1" value="4">
+      </div>
+    </div>
+    <div class="tarjeta">
+      <h2>Cuanto mide c</h2>
+      <input type="number" step="0.1" id="inputAdivina" placeholder="Respuesta">
+      <div class="fila-botones">
+        <div class="boton" id="botonComprobar">Revisar</div>
+        <div class="boton secundario" id="botonRevelar">Respuesta correcta</div>
+      </div>
+      <div class="mensaje" id="mensajeAdivina"></div>
+    </div>
+  </div>
+</main>
+
+<main id="modo-escalera">
+  <div class="zona-canvas">
+    <svg id="lienzoEscalera" viewBox="0 0 400 480" width="100%" height="100%" style="max-width:400px;"></svg>
+  </div>
+  <div class="panel">
+    <div class="tarjeta">
+      <h2>La escalera y el gatito</h2>
+      <p>Un gatito se atrapó en una ventana, como salvarlo?, para salvarlo tienes que sumar Altura² +  Distancia², luego sacar su raíz cuadrada con la calculadora de raiz</p>
+    </div>
+    <div class="tarjeta">
+      <div class="control">
+        <label>Altura <span class="valor" id="valorAltura">4.0 m</span></label>
+        <input type="range" id="sliderAltura" min="1" max="6" step="0.1" value="4">
+      </div>
+      <div class="control">
+        <label>Distancia <span class="valor" id="valorDistancia">3.0 m</span></label>
+        <input type="range" id="sliderDistancia" min="1" max="6" step="0.1" value="3">
+      </div>
+      <input type="number" step="0.1" id="inputEscalera" placeholder="Respuesta">
+      <div class="boton" id="botonRescatar">Revisar</div>
+      <div class="mensaje" id="mensajeEscalera"></div>
+    </div>
+  </div>
+</main>
+
+<main id="modo-raiz">
+  <div class="panel">
+    <div class="tarjeta">
+      <h2>Calculadora de raiz cuadrada</h2>
+      <p>Aquí puedes sacar la raíz cuadrada para la escalera y el gatito</p>
+    </div>
+    <div class="tarjeta">
+      <input type="number" step="0.01" id="inputRaiz" placeholder="La suma de Altura² + Distancia² ">
+      <div class="boton" id="botonRaiz">Calcular raíz cuadrada</div>
+      <div class="ecuacion" id="resultadoRaiz" style="margin-top:14px;">√ = </div>
+    </div>
+  </div>
+</main>
+
+<footer>Regalenos el siete</footer>
+
+<script>
+const svgNS = "http://www.w3.org/2000/svg";
+
+function crearElemento(tipo, atributos){
+  const el = document.createElementNS(svgNS, tipo);
+  for(const clave in atributos){
+    el.setAttribute(clave, atributos[clave]);
+  }
+  return el;
+}
+
+document.querySelectorAll(".pestaña").forEach(function(pestaña){
+  pestaña.addEventListener("click", function(){
+    document.querySelectorAll(".pestaña").forEach(function(p){ p.classList.remove("activa"); });
+    document.querySelectorAll("main").forEach(function(m){ m.classList.remove("activo"); });
+    pestaña.classList.add("activa");
+    document.getElementById("modo-" + pestaña.dataset.modo).classList.add("activo");
+  });
+});
+
+const lienzo = document.getElementById("lienzo");
+const sliderA = document.getElementById("sliderA");
+const sliderB = document.getElementById("sliderB");
+const valorA = document.getElementById("valorA");
+const valorB = document.getElementById("valorB");
+const areaAEl = document.getElementById("areaA");
+const areaBEl = document.getElementById("areaB");
+const areaCEl = document.getElementById("areaC");
+const ecuacionEl = document.getElementById("ecuacion");
+
+const escala = 42;
+const origenX = 230;
+const origenY = 400;
+
+function calcularPuntosCuadrado(x1, y1, x2, y2, refX, refY){
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const medioX = (x1 + x2) / 2;
+  const medioY = (y1 + y2) / 2;
+  let nx = -dy;
+  let ny = dx;
+  const haciaRef = (refX - medioX) * nx + (refY - medioY) * ny;
+  if(haciaRef > 0){
+    nx = -nx;
+    ny = -ny;
+  }
+  return [
+    {x:x1, y:y1}, {x:x2, y:y2},
+    {x:x2+nx, y:y2+ny}, {x:x1+nx, y:y1+ny}
+  ];
+}
+
+function cuadradoSobreSegmento(x1, y1, x2, y2, refX, refY, color, etiqueta){
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const medioX = (x1 + x2) / 2;
+  const medioY = (y1 + y2) / 2;
+  let nx = -dy;
+  let ny = dx;
+  const haciaRef = (refX - medioX) * nx + (refY - medioY) * ny;
+  if(haciaRef > 0){
+    nx = -nx;
+    ny = -ny;
+  }
+  const x3 = x2 + nx;
+  const y3 = y2 + ny;
+  const x4 = x1 + nx;
+  const y4 = y1 + ny;
+  const puntos = `${x1},${y1} ${x2},${y2} ${x3},${y3} ${x4},${y4}`;
+  const grupo = crearElemento("g", {});
+  const relleno = crearElemento("polygon", {
+    points:puntos,
+    fill:color,
+    "fill-opacity":"0.35",
+    stroke:color,
+    "stroke-width":"2.5",
+    "stroke-linejoin":"round"
+  });
+  grupo.appendChild(relleno);
+  const cx = (x1+x2+x3+x4)/4;
+  const cy = (y1+y2+y3+y4)/4;
+  const texto = crearElemento("text", {
+    x:cx, y:cy,
+    fill:"#2C3E50",
+    "font-family":"Arial, sans-serif",
+    "font-size":"17",
+    "font-weight":"600",
+    "text-anchor":"middle",
+    "dominant-baseline":"middle"
+  });
+  texto.textContent = etiqueta;
+  grupo.appendChild(texto);
+  return grupo;
+}
+
+function dibujar(a, b){
+  lienzo.innerHTML = "";
+
+  const Ax = origenX;
+  const Ay = origenY;
+  const Bx = origenX + b*escala;
+  const By = origenY;
+  const Cx = origenX;
+  const Cy = origenY - a*escala;
+
+  const refX = (Ax + Bx + Cx) / 3;
+  const refY = (Ay + By + Cy) / 3;
+
+  const cuadA = cuadradoSobreSegmento(Ax, Ay, Cx, Cy, refX, refY, "#FF0000", "a²");
+  const cuadB = cuadradoSobreSegmento(Ax, Ay, Bx, By, refX, refY, "#00FF23", "b²");
+  const cuadC = cuadradoSobreSegmento(Bx, By, Cx, Cy, refX, refY, "#FFFF00", "c²");
+
+  lienzo.appendChild(cuadA);
+  lienzo.appendChild(cuadB);
+  lienzo.appendChild(cuadC);
+
+  const triangulo = crearElemento("polygon", {
+    points:`${Ax},${Ay} ${Bx},${By} ${Cx},${Cy}`,
+    fill:"#FDFBF7",
+    stroke:"#2C3E50",
+    "stroke-width":"3",
+    "stroke-linejoin":"round"
+  });
+  lienzo.appendChild(triangulo);
+
+  const marcaAngulo = crearElemento("path", {
+    d:`M ${Ax} ${Ay-18} L ${Ax+18} ${Ay-18} L ${Ax+18} ${Ay}`,
+    fill:"none",
+    stroke:"#2C3E50",
+    "stroke-width":"2.5"
+  });
+  lienzo.appendChild(marcaAngulo);
+
+  const etiquetaA = crearElemento("text", {
+    x:Ax+16, y:(Ay+Cy)/2,
+    fill:"#2C3E50",
+    "font-family":"Arial, sans-serif",
+    "font-size":"16",
+    "font-weight":"700",
+    "text-anchor":"start",
+    "dominant-baseline":"middle"
+  });
+  etiquetaA.textContent = "a";
+  lienzo.appendChild(etiquetaA);
+
+  const etiquetaB = crearElemento("text", {
+    x:(Ax+Bx)/2, y:Ay-12,
+    fill:"#2C3E50",
+    "font-family":"Arial, sans-serif",
+    "font-size":"16",
+    "font-weight":"700",
+    "text-anchor":"middle"
+  });
+  etiquetaB.textContent = "b";
+  lienzo.appendChild(etiquetaB);
+
+  const mx = (Bx+Cx)/2;
+  const my = (By+Cy)/2;
+  const dirX = Bx - Cx;
+  const dirY = By - Cy;
+  const largoC = Math.sqrt(dirX*dirX + dirY*dirY) || 1;
+  let perpX = -dirY / largoC;
+  let perpY = dirX / largoC;
+  if((refX - mx) * perpX + (refY - my) * perpY > 0){
+    perpX = -perpX;
+    perpY = -perpY;
+  }
+  const etiquetaC = crearElemento("text", {
+    x:mx + perpX*18, y:my + perpY*18,
+    fill:"#2C3E50",
+    "font-family":"Arial, sans-serif",
+    "font-size":"16",
+    "font-weight":"700",
+    "text-anchor":"middle",
+    "dominant-baseline":"middle"
+  });
+  etiquetaC.textContent = "c";
+  lienzo.appendChild(etiquetaC);
+}
+
+function actualizar(){
+  const a = parseFloat(sliderA.value);
+  const b = parseFloat(sliderB.value);
+  const c = Math.sqrt(a*a + b*b);
+
+  valorA.textContent = a.toFixed(1);
+  valorB.textContent = b.toFixed(1);
+
+  areaAEl.textContent = (a*a).toFixed(2);
+  areaBEl.textContent = (b*b).toFixed(2);
+  areaCEl.textContent = (c*c).toFixed(2);
+
+  ecuacionEl.textContent = `${a.toFixed(2)}² + ${b.toFixed(2)}² = ${c.toFixed(2)}²`;
+
+  dibujar(a, b);
+}
+
+sliderA.addEventListener("input", actualizar);
+sliderB.addEventListener("input", actualizar);
+
+actualizar();
+
+const lienzoAdivina = document.getElementById("lienzoAdivina");
+const sliderA2 = document.getElementById("sliderA2");
+const sliderB2 = document.getElementById("sliderB2");
+const valorA2 = document.getElementById("valorA2");
+const valorB2 = document.getElementById("valorB2");
+const inputAdivina = document.getElementById("inputAdivina");
+const mensajeAdivina = document.getElementById("mensajeAdivina");
+let hipotenusaRevelada = false;
+
+function dibujarAdivina(){
+  lienzoAdivina.innerHTML = "";
+  const a = parseFloat(sliderA2.value);
+  const b = parseFloat(sliderB2.value);
+  const c = Math.sqrt(a*a + b*b);
+
+  valorA2.textContent = a.toFixed(1);
+  valorB2.textContent = b.toFixed(1);
+
+  const Ax = origenX, Ay = origenY;
+  const Bx = origenX + b*escala, By = origenY;
+  const Cx = origenX, Cy = origenY - a*escala;
+
+  const refX2 = (Ax + Bx + Cx) / 3;
+  const refY2 = (Ay + By + Cy) / 3;
+
+  const cuadA2 = cuadradoSobreSegmento(Ax, Ay, Cx, Cy, refX2, refY2, "#FF0000", "a²");
+  const cuadB2 = cuadradoSobreSegmento(Ax, Ay, Bx, By, refX2, refY2, "#00FF23", "b²");
+  lienzoAdivina.appendChild(cuadA2);
+  lienzoAdivina.appendChild(cuadB2);
+
+  if(hipotenusaRevelada){
+    const cuadC2 = cuadradoSobreSegmento(Bx, By, Cx, Cy, refX2, refY2, "#FFFF00", "c²");
+    lienzoAdivina.appendChild(cuadC2);
+  }
+
+  const triangulo = crearElemento("polygon", {
+    points:`${Ax},${Ay} ${Bx},${By} ${Cx},${Cy}`,
+    fill:"#F2F2F2", stroke:"#2C3E50", "stroke-width":"3"
+  });
+  lienzoAdivina.appendChild(triangulo);
+
+  lienzoAdivina.appendChild(crearElemento("path", {
+    d:`M ${Ax} ${Ay-18} L ${Ax+18} ${Ay-18} L ${Ax+18} ${Ay}`,
+    fill:"none", stroke:"#2C3E50", "stroke-width":"2.5"
+  }));
+
+  const etA = crearElemento("text", {
+    x:Ax+16, y:(Ay+Cy)/2, fill:"#2C3E50", "font-family":"Arial, sans-serif",
+    "font-size":"16", "font-weight":"700"
+  });
+  etA.textContent = "a = " + a.toFixed(1);
+  lienzoAdivina.appendChild(etA);
+
+  const etB = crearElemento("text", {
+    x:(Ax+Bx)/2, y:Ay-12, fill:"#2C3E50", "font-family":"Arial, sans-serif",
+    "font-size":"16", "font-weight":"700", "text-anchor":"middle"
+  });
+  etB.textContent = "b = " + b.toFixed(1);
+  lienzoAdivina.appendChild(etB);
+
+  const mx = (Bx+Cx)/2, my = (By+Cy)/2;
+  const etC = crearElemento("text", {
+    x:mx+16, y:my-6, fill:"#FF0000", "font-family":"Arial, sans-serif",
+    "font-size":"18", "font-weight":"700"
+  });
+  etC.textContent = hipotenusaRevelada ? ("c = " + c.toFixed(2)) : "c = ?";
+  lienzoAdivina.appendChild(etC);
+
+  return {a:a, b:b, c:c};
+}
+
+sliderA2.addEventListener("input", function(){ hipotenusaRevelada=false; mensajeAdivina.textContent=""; mensajeAdivina.className="mensaje"; dibujarAdivina(); });
+sliderB2.addEventListener("input", function(){ hipotenusaRevelada=false; mensajeAdivina.textContent=""; mensajeAdivina.className="mensaje"; dibujarAdivina(); });
+
+document.getElementById("botonComprobar").addEventListener("click", function(){
+  const datos = dibujarAdivina();
+  const respuesta = parseFloat(inputAdivina.value);
+  if(isNaN(respuesta)){
+    mensajeAdivina.textContent = "Escribe un número primero.";
+    mensajeAdivina.className = "mensaje mal";
+    return;
+  }
+  if(Math.abs(respuesta - datos.c) < 0.1){
+    mensajeAdivina.textContent = "¡Correcto! c = " + datos.c.toFixed(2);
+    mensajeAdivina.className = "mensaje ok";
+    hipotenusaRevelada = true;
+    dibujarAdivina();
+  } else {
+    mensajeAdivina.textContent = "No es correcto, inténtalo de nuevo.";
+    mensajeAdivina.className = "mensaje mal";
+  }
+});
+
+document.getElementById("botonRevelar").addEventListener("click", function(){
+  hipotenusaRevelada = true;
+  const datos = dibujarAdivina();
+  mensajeAdivina.textContent = "La hipotenusa mide c = " + datos.c.toFixed(2);
+  mensajeAdivina.className = "mensaje";
+});
+
+dibujarAdivina();
+
+const lienzoEscalera = document.getElementById("lienzoEscalera");
+const sliderDistancia = document.getElementById("sliderDistancia");
+const valorDistancia = document.getElementById("valorDistancia");
+const sliderAltura = document.getElementById("sliderAltura");
+const valorAltura = document.getElementById("valorAltura");
+const inputEscalera = document.getElementById("inputEscalera");
+const mensajeEscalera = document.getElementById("mensajeEscalera");
+const escalaEscalera = 50;
+const sueloY = 440;
+const murallaX = 60;
+
+function dibujarEscalera(rescatado){
+  lienzoEscalera.innerHTML = "";
+  const d = parseFloat(sliderDistancia.value);
+  const alturaVentana = parseFloat(sliderAltura.value);
+  valorDistancia.textContent = d.toFixed(1) + " m";
+  valorAltura.textContent = alturaVentana.toFixed(1) + " m";
+
+  lienzoEscalera.appendChild(crearElemento("line", {
+    x1:murallaX, y1:sueloY, x2:murallaX, y2:sueloY-alturaVentana*escalaEscalera-40,
+    stroke:"#2C3E50", "stroke-width":"6"
+  }));
+  lienzoEscalera.appendChild(crearElemento("line", {
+    x1:0, y1:sueloY, x2:360, y2:sueloY, stroke:"#2C3E50", "stroke-width":"4"
+  }));
+
+  const ventanaY = sueloY - alturaVentana*escalaEscalera;
+  lienzoEscalera.appendChild(crearElemento("rect", {
+    x:murallaX-28, y:ventanaY-20, width:36, height:36, fill:"#FBFF00", stroke:"#2C3E50", "stroke-width":"2"
+  }));
+  const gato = crearElemento("text", {
+    x:murallaX-10, y:ventanaY+4, "font-size":"22", "text-anchor":"middle"
+  });
+  gato.textContent = rescatado ? "😺" : "🐱";
+  lienzoEscalera.appendChild(gato);
+
+  const baseX = murallaX + d*escalaEscalera;
+  lienzoEscalera.appendChild(crearElemento("line", {
+    x1:baseX, y1:sueloY, x2:murallaX, y2:ventanaY,
+    stroke: rescatado ? "#20AB00" : "#2E86DE", "stroke-width":"5"
+  }));
+  lienzoEscalera.appendChild(crearElemento("circle", {
+    cx:baseX, cy:sueloY, r:6, fill:"#FF0000"
+  }));
+
+  const etiquetaD = crearElemento("text", {
+    x:(murallaX+baseX)/2, y:sueloY+22, fill:"#2C3E50", "font-family":"Arial, sans-serif",
+    "font-size":"14", "font-weight":"700", "text-anchor":"middle"
+  });
+  etiquetaD.textContent = d.toFixed(1) + " m";
+  lienzoEscalera.appendChild(etiquetaD);
+
+  const etiquetaH = crearElemento("text", {
+    x:murallaX-40, y:(sueloY+ventanaY)/2, fill:"#2C3E50", "font-family":"Arial, sans-serif",
+    "font-size":"14", "font-weight":"700", "text-anchor":"middle"
+  });
+  etiquetaH.textContent = alturaVentana.toFixed(1) + " m";
+  lienzoEscalera.appendChild(etiquetaH);
+}
+
+sliderDistancia.addEventListener("input", function(){ dibujarEscalera(false); mensajeEscalera.textContent=""; mensajeEscalera.className="mensaje"; });
+sliderAltura.addEventListener("input", function(){ dibujarEscalera(false); mensajeEscalera.textContent=""; mensajeEscalera.className="mensaje"; });
+
+document.getElementById("botonRescatar").addEventListener("click", function(){
+  const d = parseFloat(sliderDistancia.value);
+  const alturaVentana = parseFloat(sliderAltura.value);
+  const largoCorrecto = Math.sqrt(alturaVentana*alturaVentana + d*d);
+  const respuesta = parseFloat(inputEscalera.value);
+  if(isNaN(respuesta)){
+    mensajeEscalera.textContent = "Escribe el largo de la escalera primero.";
+    mensajeEscalera.className = "mensaje mal";
+    return;
+  }
+  if(Math.abs(respuesta - largoCorrecto) < 0.15){
+    mensajeEscalera.textContent = "¡Perfecto! Rescataste al gato con una escalera de " + largoCorrecto.toFixed(2) + " m.";
+    mensajeEscalera.className = "mensaje ok";
+    dibujarEscalera(true);
+  } else if(respuesta < largoCorrecto){
+    mensajeEscalera.textContent = "Muy corta, el gato sigue atrapado.";
+    mensajeEscalera.className = "mensaje mal";
+    dibujarEscalera(false);
+  } else {
+    mensajeEscalera.textContent = "Muy larga, la escalera no cabe bien.";
+    mensajeEscalera.className = "mensaje mal";
+    dibujarEscalera(false);
+  }
+});
+
+dibujarEscalera(false);
+
+document.getElementById("botonRaiz").addEventListener("click", function(){
+  const numero = parseFloat(document.getElementById("inputRaiz").value);
+  const resultado = document.getElementById("resultadoRaiz");
+  if(isNaN(numero) || numero < 0){
+    resultado.textContent = "Escribe un número positivo.";
+    return;
+  }
+  resultado.textContent = "√" + numero + " = " + Math.sqrt(numero).toFixed(4);
+});
+</script>
+
+<div style="font-family:Arial, sans-serif; color:#000000; padding:20px 40px 20px 40px;">
+Creado con Simplecode<br>
+Visita Simplecode en <a href="https://renatoehzproyectos.github.io/SimpleCode/" style="color:#000000;" target="_blank">https://github.com/renatoehzproyectos/SimpleCode</a><br>
+<br>
+Nombre del proyecto:<br>
+"Benja y Renato Matematicas Tarea"<br>
+<br>
+Tipo de proyecto:<br>
+"Colaboracion"<br>
+<br>
+Colaboradores:<br>
+"renatocreadoradmindev2343, benjaadmindevxdddd"
+</div>
+</body>
+</html>
