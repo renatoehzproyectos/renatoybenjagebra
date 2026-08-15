@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=10">
 <title>Renato y Benja Gebra</title>
 <style>
 body{
@@ -35,6 +35,19 @@ main{
 }
 main.activo{
 	display: block;
+}
+.sub-pestañas{
+	margin: 4px 0 16px 0;
+}
+.sub-main{
+	display: none;
+}
+.sub-main.sub-activo{
+	display: block;
+}
+.pestaña.sub-activa{
+	background: #dddddd;
+	font-weight: bold;
 }
 .zona-canvas{
 	border: 1px solid #999999;
@@ -149,7 +162,7 @@ footer{
 
 <div class="pestañas" id="pestañas">
   <div class="pestaña activa" data-modo="explorar">Explorar</div>
-  <div class="pestaña" data-modo="adivina">Adivina la hipotenusa</div>
+  <div class="pestaña" data-modo="adivina">Adivina</div>
   <div class="pestaña" data-modo="escalera">Escalera del gato</div>
   <div class="pestaña" data-modo="raiz">Calculadora de raíz</div>
 </div>
@@ -161,14 +174,18 @@ footer{
 
   <div class="panel">
     <div class="tarjeta">
-      <h2>Cambiar el tamaño del cateto:</h2>
+      <h2>Cambiar la longitud:</h2>
       <div class="control">
-        <label>Cateto a <span class="valor" id="valorA">3.0</span></label>
+        <label>Jaigt <span class="valor" id="valorA">3.0</span></label>
         <input type="range" id="sliderA" min="1" max="6" step="0.1" value="3">
       </div>
       <div class="control">
-        <label>Cateto b <span class="valor" id="valorB">4.0</span></label>
+        <label>Base <span class="valor" id="valorB">4.0</span></label>
         <input type="range" id="sliderB" min="1" max="6" step="0.1" value="4">
+      </div>
+      <div class="control">
+        <label>Hipotenusa <span class="valor" id="valorC">5.0</span></label>
+        <input type="range" id="sliderC" min="1.4" max="8.5" step="0.1" value="5">
       </div>
     </div>
 
@@ -176,17 +193,20 @@ footer{
       <h2>Area de Los cuadrados:</h2>
       <div class="filas">
         <div class="fila">
-          <span class="etiqueta"><span class="marcador" style="background:var(--rojo)"></span>a²</span>
-          <span class="valor-area" id="areaA">9.00</span>
+          <span class="etiqueta"><span class="marcador" style="background:var(--rojo)"></span>Cuadrado rojo del cateto</span>
+          <span class="valor-area"><span id="etiquetaAreaA">9.00</span> = <span id="areaA">9.00</span></span>
         </div>
+        <input type="range" id="sliderAreaA" min="1" max="36" step="0.1" value="9">
         <div class="fila">
-          <span class="etiqueta"><span class="marcador" style="background:var(--salvia)"></span>b²</span>
-          <span class="valor-area" id="areaB">16.00</span>
+          <span class="etiqueta"><span class="marcador" style="background:var(--salvia)"></span>Cuadrado verde del cateto</span>
+          <span class="valor-area"><span id="etiquetaAreaB">16.00</span> = <span id="areaB">16.00</span></span>
         </div>
+        <input type="range" id="sliderAreaB" min="1" max="36" step="0.1" value="16">
         <div class="fila">
-          <span class="etiqueta"><span class="marcador" style="background:var(--mostaza)"></span>c²</span>
-          <span class="valor-area" id="areaC">25.00</span>
+          <span class="etiqueta"><span class="marcador" style="background:var(--mostaza)"></span>Cuadrado amarillo de la hipotenusa</span>
+          <span class="valor-area"><span id="etiquetaAreaC">25.00</span> = <span id="areaC">25.00</span></span>
         </div>
+        <input type="range" id="sliderAreaC" min="2" max="72" step="0.1" value="25">
       </div>
     </div>
 
@@ -198,31 +218,108 @@ footer{
 </main>
 
 <main id="modo-adivina">
-  <div class="zona-canvas">
-    <svg id="lienzoAdivina" viewBox="0 0 640 560" width="100%" height="100%" style="max-width:620px;"></svg>
+  <div class="pestañas sub-pestañas" id="sub-pestañas-adivina">
+    <div class="pestaña sub-activa" data-submodo="hipotenusa">Hipotenusa</div>
+    <div class="pestaña" data-submodo="base">Base</div>
+    <div class="pestaña" data-submodo="jaigt">Jaigt</div>
   </div>
-  <div class="panel">
-    <div class="tarjeta">
-      <h2>Adivina la hipotenusa:</h2>
-      <div class="control">
-        <label>Cateto a <span class="valor" id="valorA2">3.0</span></label>
-        <input type="range" id="sliderA2" min="1" max="6" step="0.1" value="3">
+
+  <div class="sub-main sub-activo" id="sub-hipotenusa">
+    <div class="zona-canvas">
+      <svg id="lienzoAdivinaHip" viewBox="0 0 640 560" width="100%" height="100%" style="max-width:620px;"></svg>
+    </div>
+    <div class="panel">
+      <div class="tarjeta">
+        <h2>Adivina la longitud de la hipotenusa/Área del cuadrado amarillo de la hipotenusa</h2>
+        <p>Para el área del cuadrado amarillo: base² + jaigt²<br>Para la longitud de la hipotenusa: √base² + jaigt²</p>
       </div>
-      <div class="control">
-        <label>Cateto b <span class="valor" id="valorB2">4.0</span></label>
-        <input type="range" id="sliderB2" min="1" max="6" step="0.1" value="4">
+      <div class="tarjeta">
+        <h2>Mover los datos:</h2>
+        <div class="control">
+          <label>Jaigt <span class="valor" id="valorA2">3.0</span></label>
+          <input type="range" id="sliderA2" min="1" max="6" step="0.1" value="3">
+        </div>
+        <div class="control">
+          <label>Base <span class="valor" id="valorB2">4.0</span></label>
+          <input type="range" id="sliderB2" min="1" max="6" step="0.1" value="4">
+        </div>
+      </div>
+      <div class="tarjeta">
+        <h2>¿Cuánto mide la hipotenusa/su area?</h2>
+        <input type="number" step="0.1" id="inputAdivinaHip" placeholder="Respuesta">
+        <div class="fila-botones">
+          <div class="boton" id="botonComprobarHip">Revisar</div>
+          <div class="boton secundario" id="botonRevelarHip">Respuesta correcta</div>
+        </div>
+        <div class="mensaje" id="mensajeAdivinaHip"></div>
       </div>
     </div>
-    <div class="tarjeta">
-      <h2>Cuanto mide c</h2>
-      <input type="number" step="0.1" id="inputAdivina" placeholder="Respuesta">
-      <div class="fila-botones">
-        <div class="boton" id="botonComprobar">Revisar</div>
-        <div class="boton secundario" id="botonRevelar">Respuesta correcta</div>
+  </div>
+
+  <div class="sub-main" id="sub-base">
+    <div class="zona-canvas">
+      <svg id="lienzoAdivinaBase" viewBox="0 0 640 560" width="100%" height="100%" style="max-width:620px;"></svg>
+    </div>
+    <div class="panel">
+      <div class="tarjeta">
+        <h2>Adivina la longitud de la base/Área del cuadrado verde del cateto</h2>
+        <p>Para el área del cuadrado verde: hip² - jaigt²<br>Para la longitud de la base: √hip² - jaigt²</p>
       </div>
-      <div class="mensaje" id="mensajeAdivina"></div>
+      <div class="tarjeta">
+        <h2>Mover los datos:</h2>
+        <div class="control">
+          <label>Jaigt <span class="valor" id="valorJaigtBase">3.0</span></label>
+          <input type="range" id="sliderJaigtBase" min="1" max="5" step="0.1" value="3">
+        </div>
+        <div class="control">
+          <label>Hipotenusa <span class="valor" id="valorHipBase">5.0</span></label>
+          <input type="range" id="sliderHipBase" min="3.5" max="8" step="0.1" value="5">
+        </div>
+      </div>
+      <div class="tarjeta">
+        <h2>¿Cuánto mide la base?</h2>
+        <input type="number" step="0.1" id="inputAdivinaBase" placeholder="Respuesta">
+        <div class="fila-botones">
+          <div class="boton" id="botonComprobarBase">Revisar</div>
+          <div class="boton secundario" id="botonRevelarBase">Respuesta correcta</div>
+        </div>
+        <div class="mensaje" id="mensajeAdivinaBase"></div>
+      </div>
     </div>
   </div>
+
+  <div class="sub-main" id="sub-jaigt">
+    <div class="zona-canvas">
+      <svg id="lienzoAdivinaJaigt" viewBox="0 0 640 560" width="100%" height="100%" style="max-width:620px;"></svg>
+    </div>
+    <div class="panel">
+      <div class="tarjeta">
+        <h2>Adivina la longitud de jaigt/Área del cuadrado rojo del cateto</h2>
+        <p>Para el área del cuadrado rojo: hip² - base²<br>Para la longitud del jaigt: √hip² - base²</p>
+      </div>
+      <div class="tarjeta">
+        <h2>Mover los datos:</h2>
+        <div class="control">
+          <label>Base <span class="valor" id="valorBaseJaigt">4.0</span></label>
+          <input type="range" id="sliderBaseJaigt" min="1" max="5" step="0.1" value="4">
+        </div>
+        <div class="control">
+          <label>Hipotenusa <span class="valor" id="valorHipJaigt">5.0</span></label>
+          <input type="range" id="sliderHipJaigt" min="3.5" max="8" step="0.1" value="5">
+        </div>
+      </div>
+      <div class="tarjeta">
+        <h2>¿Cuánto mide el jaigt?</h2>
+        <input type="number" step="0.1" id="inputAdivinaJaigt" placeholder="Respuesta">
+        <div class="fila-botones">
+          <div class="boton" id="botonComprobarJaigt">Revisar</div>
+          <div class="boton secundario" id="botonRevelarJaigt">Respuesta correcta</div>
+        </div>
+        <div class="mensaje" id="mensajeAdivinaJaigt"></div>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <main id="modo-escalera">
@@ -232,7 +329,7 @@ footer{
   <div class="panel">
     <div class="tarjeta">
       <h2>La escalera y el gatito</h2>
-      <p>Un gatito se atrapó en una ventana, como salvarlo?, para salvarlo tienes que sumar Altura² +  Distancia², luego sacar su raíz cuadrada con la calculadora de raiz</p>
+      <p>Un gatito se atrapó en una ventana, como salvarlo?, para salvarlo tienes que sumar Jaigt² +  Base², luego sacar su raíz cuadrada con la calculadora de raiz</p>
     </div>
     <div class="tarjeta">
       <div class="control">
@@ -277,24 +374,41 @@ function crearElemento(tipo, atributos){
   return el;
 }
 
-document.querySelectorAll(".pestaña").forEach(function(pestaña){
+document.querySelectorAll("#pestañas .pestaña").forEach(function(pestaña){
   pestaña.addEventListener("click", function(){
-    document.querySelectorAll(".pestaña").forEach(function(p){ p.classList.remove("activa"); });
+    document.querySelectorAll("#pestañas .pestaña").forEach(function(p){ p.classList.remove("activa"); });
     document.querySelectorAll("main").forEach(function(m){ m.classList.remove("activo"); });
     pestaña.classList.add("activa");
     document.getElementById("modo-" + pestaña.dataset.modo).classList.add("activo");
   });
 });
 
+document.querySelectorAll("#sub-pestañas-adivina .pestaña").forEach(function(pestaña){
+  pestaña.addEventListener("click", function(){
+    document.querySelectorAll("#sub-pestañas-adivina .pestaña").forEach(function(p){ p.classList.remove("sub-activa"); });
+    document.querySelectorAll(".sub-main").forEach(function(m){ m.classList.remove("sub-activo"); });
+    pestaña.classList.add("sub-activa");
+    document.getElementById("sub-" + pestaña.dataset.submodo).classList.add("sub-activo");
+  });
+});
+
 const lienzo = document.getElementById("lienzo");
 const sliderA = document.getElementById("sliderA");
 const sliderB = document.getElementById("sliderB");
+const sliderC = document.getElementById("sliderC");
+const sliderAreaA = document.getElementById("sliderAreaA");
+const sliderAreaB = document.getElementById("sliderAreaB");
+const sliderAreaC = document.getElementById("sliderAreaC");
 const valorA = document.getElementById("valorA");
 const valorB = document.getElementById("valorB");
+const valorC = document.getElementById("valorC");
 const areaAEl = document.getElementById("areaA");
 const areaBEl = document.getElementById("areaB");
 const areaCEl = document.getElementById("areaC");
 const ecuacionEl = document.getElementById("ecuacion");
+const etiquetaAreaA = document.getElementById("etiquetaAreaA");
+const etiquetaAreaB = document.getElementById("etiquetaAreaB");
+const etiquetaAreaC = document.getElementById("etiquetaAreaC");
 
 const escala = 42;
 const origenX = 230;
@@ -374,9 +488,10 @@ function dibujar(a, b){
   const refX = (Ax + Bx + Cx) / 3;
   const refY = (Ay + By + Cy) / 3;
 
-  const cuadA = cuadradoSobreSegmento(Ax, Ay, Cx, Cy, refX, refY, "#FF0000", "a²");
-  const cuadB = cuadradoSobreSegmento(Ax, Ay, Bx, By, refX, refY, "#00FF23", "b²");
-  const cuadC = cuadradoSobreSegmento(Bx, By, Cx, Cy, refX, refY, "#FFFF00", "c²");
+  const c = Math.sqrt(a*a + b*b);
+  const cuadA = cuadradoSobreSegmento(Ax, Ay, Cx, Cy, refX, refY, "#FF0000", (a*a).toFixed(2));
+  const cuadB = cuadradoSobreSegmento(Ax, Ay, Bx, By, refX, refY, "#00FF23", (b*b).toFixed(2));
+  const cuadC = cuadradoSobreSegmento(Bx, By, Cx, Cy, refX, refY, "#FFFF00", (c*c).toFixed(2));
 
   lienzo.appendChild(cuadA);
   lienzo.appendChild(cuadB);
@@ -408,7 +523,7 @@ function dibujar(a, b){
     "text-anchor":"start",
     "dominant-baseline":"middle"
   });
-  etiquetaA.textContent = "a";
+  etiquetaA.textContent = a.toFixed(1);
   lienzo.appendChild(etiquetaA);
 
   const etiquetaB = crearElemento("text", {
@@ -419,7 +534,7 @@ function dibujar(a, b){
     "font-weight":"700",
     "text-anchor":"middle"
   });
-  etiquetaB.textContent = "b";
+  etiquetaB.textContent = b.toFixed(1);
   lienzo.appendChild(etiquetaB);
 
   const mx = (Bx+Cx)/2;
@@ -442,39 +557,110 @@ function dibujar(a, b){
     "text-anchor":"middle",
     "dominant-baseline":"middle"
   });
-  etiquetaC.textContent = "c";
+  etiquetaC.textContent = c.toFixed(2);
   lienzo.appendChild(etiquetaC);
 }
 
-function actualizar(){
-  const a = parseFloat(sliderA.value);
-  const b = parseFloat(sliderB.value);
-  const c = Math.sqrt(a*a + b*b);
+let sincronizando = false;
 
+function pintar(a, b, c){
   valorA.textContent = a.toFixed(1);
   valorB.textContent = b.toFixed(1);
+  valorC.textContent = c.toFixed(1);
 
   areaAEl.textContent = (a*a).toFixed(2);
   areaBEl.textContent = (b*b).toFixed(2);
   areaCEl.textContent = (c*c).toFixed(2);
+
+  etiquetaAreaA.textContent = a.toFixed(2) + "²";
+  etiquetaAreaB.textContent = b.toFixed(2) + "²";
+  etiquetaAreaC.textContent = c.toFixed(2) + "²";
 
   ecuacionEl.textContent = `${a.toFixed(2)}² + ${b.toFixed(2)}² = ${c.toFixed(2)}²`;
 
   dibujar(a, b);
 }
 
+function sincronizarControles(a, b, c){
+  sincronizando = true;
+  sliderA.value = a;
+  sliderB.value = b;
+  sliderC.value = Math.min(Math.max(c, parseFloat(sliderC.min)), parseFloat(sliderC.max));
+  sliderAreaA.value = Math.min(Math.max(a*a, parseFloat(sliderAreaA.min)), parseFloat(sliderAreaA.max));
+  sliderAreaB.value = Math.min(Math.max(b*b, parseFloat(sliderAreaB.min)), parseFloat(sliderAreaB.max));
+  sliderAreaC.value = Math.min(Math.max(c*c, parseFloat(sliderAreaC.min)), parseFloat(sliderAreaC.max));
+  sincronizando = false;
+}
+
+function actualizar(){
+  if(sincronizando) return;
+  const a = parseFloat(sliderA.value);
+  const b = parseFloat(sliderB.value);
+  const c = Math.sqrt(a*a + b*b);
+  sincronizarControles(a, b, c);
+  pintar(a, b, c);
+}
+
+function actualizarDesdeHip(){
+  if(sincronizando) return;
+  const a0 = parseFloat(sliderA.value);
+  const b0 = parseFloat(sliderB.value);
+  const c = parseFloat(sliderC.value);
+  const cActual = Math.sqrt(a0*a0 + b0*b0) || 1;
+  const factor = c / cActual;
+  const a = a0 * factor;
+  const b = b0 * factor;
+  sincronizarControles(a, b, c);
+  pintar(a, b, c);
+}
+
+function actualizarDesdeAreaA(){
+  if(sincronizando) return;
+  const a = Math.sqrt(parseFloat(sliderAreaA.value));
+  const b = parseFloat(sliderB.value);
+  const c = Math.sqrt(a*a + b*b);
+  sincronizarControles(a, b, c);
+  pintar(a, b, c);
+}
+
+function actualizarDesdeAreaB(){
+  if(sincronizando) return;
+  const a = parseFloat(sliderA.value);
+  const b = Math.sqrt(parseFloat(sliderAreaB.value));
+  const c = Math.sqrt(a*a + b*b);
+  sincronizarControles(a, b, c);
+  pintar(a, b, c);
+}
+
+function actualizarDesdeAreaC(){
+  if(sincronizando) return;
+  const a0 = parseFloat(sliderA.value);
+  const b0 = parseFloat(sliderB.value);
+  const c = Math.sqrt(parseFloat(sliderAreaC.value));
+  const cActual = Math.sqrt(a0*a0 + b0*b0) || 1;
+  const factor = c / cActual;
+  const a = a0 * factor;
+  const b = b0 * factor;
+  sincronizarControles(a, b, c);
+  pintar(a, b, c);
+}
+
 sliderA.addEventListener("input", actualizar);
 sliderB.addEventListener("input", actualizar);
+sliderC.addEventListener("input", actualizarDesdeHip);
+sliderAreaA.addEventListener("input", actualizarDesdeAreaA);
+sliderAreaB.addEventListener("input", actualizarDesdeAreaB);
+sliderAreaC.addEventListener("input", actualizarDesdeAreaC);
 
 actualizar();
 
-const lienzoAdivina = document.getElementById("lienzoAdivina");
+const lienzoAdivina = document.getElementById("lienzoAdivinaHip");
 const sliderA2 = document.getElementById("sliderA2");
 const sliderB2 = document.getElementById("sliderB2");
 const valorA2 = document.getElementById("valorA2");
 const valorB2 = document.getElementById("valorB2");
-const inputAdivina = document.getElementById("inputAdivina");
-const mensajeAdivina = document.getElementById("mensajeAdivina");
+const inputAdivina = document.getElementById("inputAdivinaHip");
+const mensajeAdivina = document.getElementById("mensajeAdivinaHip");
 let hipotenusaRevelada = false;
 
 function dibujarAdivina(){
@@ -493,8 +679,8 @@ function dibujarAdivina(){
   const refX2 = (Ax + Bx + Cx) / 3;
   const refY2 = (Ay + By + Cy) / 3;
 
-  const cuadA2 = cuadradoSobreSegmento(Ax, Ay, Cx, Cy, refX2, refY2, "#FF0000", "a²");
-  const cuadB2 = cuadradoSobreSegmento(Ax, Ay, Bx, By, refX2, refY2, "#00FF23", "b²");
+  const cuadA2 = cuadradoSobreSegmento(Ax, Ay, Cx, Cy, refX2, refY2, "#FF0000", (a*a).toFixed(2));
+  const cuadB2 = cuadradoSobreSegmento(Ax, Ay, Bx, By, refX2, refY2, "#00FF23", (b*b).toFixed(2));
   lienzoAdivina.appendChild(cuadA2);
   lienzoAdivina.appendChild(cuadB2);
 
@@ -518,14 +704,14 @@ function dibujarAdivina(){
     x:Ax+16, y:(Ay+Cy)/2, fill:"#2C3E50", "font-family":"Arial, sans-serif",
     "font-size":"16", "font-weight":"700"
   });
-  etA.textContent = "a = " + a.toFixed(1);
+  etA.textContent = "jaigt = " + a.toFixed(1);
   lienzoAdivina.appendChild(etA);
 
   const etB = crearElemento("text", {
     x:(Ax+Bx)/2, y:Ay-12, fill:"#2C3E50", "font-family":"Arial, sans-serif",
     "font-size":"16", "font-weight":"700", "text-anchor":"middle"
   });
-  etB.textContent = "b = " + b.toFixed(1);
+  etB.textContent = "base = " + b.toFixed(1);
   lienzoAdivina.appendChild(etB);
 
   const mx = (Bx+Cx)/2, my = (By+Cy)/2;
@@ -533,7 +719,7 @@ function dibujarAdivina(){
     x:mx+16, y:my-6, fill:"#FF0000", "font-family":"Arial, sans-serif",
     "font-size":"18", "font-weight":"700"
   });
-  etC.textContent = hipotenusaRevelada ? ("c = " + c.toFixed(2)) : "c = ?";
+  etC.textContent = hipotenusaRevelada ? ("hip = " + c.toFixed(2)) : "hip = ?";
   lienzoAdivina.appendChild(etC);
 
   return {a:a, b:b, c:c};
@@ -542,7 +728,7 @@ function dibujarAdivina(){
 sliderA2.addEventListener("input", function(){ hipotenusaRevelada=false; mensajeAdivina.textContent=""; mensajeAdivina.className="mensaje"; dibujarAdivina(); });
 sliderB2.addEventListener("input", function(){ hipotenusaRevelada=false; mensajeAdivina.textContent=""; mensajeAdivina.className="mensaje"; dibujarAdivina(); });
 
-document.getElementById("botonComprobar").addEventListener("click", function(){
+document.getElementById("botonComprobarHip").addEventListener("click", function(){
   const datos = dibujarAdivina();
   const respuesta = parseFloat(inputAdivina.value);
   if(isNaN(respuesta)){
@@ -550,8 +736,9 @@ document.getElementById("botonComprobar").addEventListener("click", function(){
     mensajeAdivina.className = "mensaje mal";
     return;
   }
-  if(Math.abs(respuesta - datos.c) < 0.1){
-    mensajeAdivina.textContent = "¡Correcto! c = " + datos.c.toFixed(2);
+  const areaC = datos.c * datos.c;
+  if(Math.abs(respuesta - datos.c) < 0.1 || Math.abs(respuesta - areaC) < 0.1){
+    mensajeAdivina.textContent = "¡Correcto! La hipotenusa mide " + datos.c.toFixed(2) + " (Área del cuadrado amarillo: " + areaC.toFixed(2) + ")";
     mensajeAdivina.className = "mensaje ok";
     hipotenusaRevelada = true;
     dibujarAdivina();
@@ -561,14 +748,224 @@ document.getElementById("botonComprobar").addEventListener("click", function(){
   }
 });
 
-document.getElementById("botonRevelar").addEventListener("click", function(){
+document.getElementById("botonRevelarHip").addEventListener("click", function(){
   hipotenusaRevelada = true;
   const datos = dibujarAdivina();
-  mensajeAdivina.textContent = "La hipotenusa mide c = " + datos.c.toFixed(2);
+  mensajeAdivina.textContent = "La hipotenusa mide " + datos.c.toFixed(2) + " (Área del cuadrado amarillo: " + (datos.c*datos.c).toFixed(2) + ")";
   mensajeAdivina.className = "mensaje";
 });
 
 dibujarAdivina();
+
+/* ----------  base (conoces jaigt y la hipotenusa) ---------- */
+const lienzoBase = document.getElementById("lienzoAdivinaBase");
+const sliderJaigtBase = document.getElementById("sliderJaigtBase");
+const sliderHipBase = document.getElementById("sliderHipBase");
+const valorJaigtBase = document.getElementById("valorJaigtBase");
+const valorHipBase = document.getElementById("valorHipBase");
+const inputAdivinaBase = document.getElementById("inputAdivinaBase");
+const mensajeAdivinaBase = document.getElementById("mensajeAdivinaBase");
+let baseRevelada = false;
+
+function ajustarLimiteHipBase(){
+  const jaigt = parseFloat(sliderJaigtBase.value);
+  const minHip = (jaigt + 0.5).toFixed(1);
+  sliderHipBase.min = minHip;
+  if(parseFloat(sliderHipBase.value) < parseFloat(minHip)){
+    sliderHipBase.value = minHip;
+  }
+}
+
+function dibujarAdivinaBase(){
+  ajustarLimiteHipBase();
+  lienzoBase.innerHTML = "";
+  const jaigt = parseFloat(sliderJaigtBase.value);
+  const c = parseFloat(sliderHipBase.value);
+  const base = Math.sqrt(Math.max(c*c - jaigt*jaigt, 0));
+
+  valorJaigtBase.textContent = jaigt.toFixed(1);
+  valorHipBase.textContent = c.toFixed(1);
+
+  const Ax = origenX, Ay = origenY;
+  const Bx = origenX + base*escala, By = origenY;
+  const Cx = origenX, Cy = origenY - jaigt*escala;
+  const refX = (Ax+Bx+Cx)/3, refY = (Ay+By+Cy)/3;
+
+  const cuadC = cuadradoSobreSegmento(Bx, By, Cx, Cy, refX, refY, "#FFFF00", (c*c).toFixed(2));
+  lienzoBase.appendChild(cuadC);
+
+  const cuadA = cuadradoSobreSegmento(Ax, Ay, Cx, Cy, refX, refY, "#FF0000", (jaigt*jaigt).toFixed(2));
+  lienzoBase.appendChild(cuadA);
+  if(baseRevelada){
+    const cuadB = cuadradoSobreSegmento(Ax, Ay, Bx, By, refX, refY, "#00FF23", (base*base).toFixed(2));
+    lienzoBase.appendChild(cuadB);
+  }
+
+  lienzoBase.appendChild(crearElemento("polygon", {
+    points:`${Ax},${Ay} ${Bx},${By} ${Cx},${Cy}`, fill:"#F2F2F2", stroke:"#2C3E50", "stroke-width":"3"
+  }));
+  lienzoBase.appendChild(crearElemento("path", {
+    d:`M ${Ax} ${Ay-18} L ${Ax+18} ${Ay-18} L ${Ax+18} ${Ay}`, fill:"none", stroke:"#2C3E50", "stroke-width":"2.5"
+  }));
+
+  const etJaigt = crearElemento("text", {
+    x:Ax+16, y:(Ay+Cy)/2, fill:"#2C3E50", "font-family":"Arial, sans-serif", "font-size":"16", "font-weight":"700"
+  });
+  etJaigt.textContent = "jaigt = " + jaigt.toFixed(1);
+  lienzoBase.appendChild(etJaigt);
+
+  const etBase = crearElemento("text", {
+    x:(Ax+Bx)/2, y:Ay-12, fill:"#00791A", "font-family":"Arial, sans-serif", "font-size":"18", "font-weight":"700", "text-anchor":"middle"
+  });
+  etBase.textContent = baseRevelada ? ("base = " + base.toFixed(2)) : "base = ?";
+  lienzoBase.appendChild(etBase);
+
+  const mx=(Bx+Cx)/2, my=(By+Cy)/2;
+  const etHip = crearElemento("text", {
+    x:mx+16, y:my-6, fill:"#2C3E50", "font-family":"Arial, sans-serif", "font-size":"16", "font-weight":"700"
+  });
+  etHip.textContent = "hip = " + c.toFixed(1);
+  lienzoBase.appendChild(etHip);
+
+  return {jaigt:jaigt, c:c, base:base};
+}
+
+sliderJaigtBase.addEventListener("input", function(){ baseRevelada=false; mensajeAdivinaBase.textContent=""; mensajeAdivinaBase.className="mensaje"; dibujarAdivinaBase(); });
+sliderHipBase.addEventListener("input", function(){ baseRevelada=false; mensajeAdivinaBase.textContent=""; mensajeAdivinaBase.className="mensaje"; dibujarAdivinaBase(); });
+
+document.getElementById("botonComprobarBase").addEventListener("click", function(){
+  const datos = dibujarAdivinaBase();
+  const respuesta = parseFloat(inputAdivinaBase.value);
+  if(isNaN(respuesta)){
+    mensajeAdivinaBase.textContent = "Escribe un número primero.";
+    mensajeAdivinaBase.className = "mensaje mal";
+    return;
+  }
+  const areaBase = datos.base * datos.base;
+  if(Math.abs(respuesta - datos.base) < 0.1 || Math.abs(respuesta - areaBase) < 0.1){
+    mensajeAdivinaBase.textContent = "¡Correcto! La base mide " + datos.base.toFixed(2) + " (Área del cuadrado verde: " + areaBase.toFixed(2) + ")";
+    mensajeAdivinaBase.className = "mensaje ok";
+    baseRevelada = true;
+    dibujarAdivinaBase();
+  } else {
+    mensajeAdivinaBase.textContent = "No es correcto, inténtalo de nuevo.";
+    mensajeAdivinaBase.className = "mensaje mal";
+  }
+});
+
+document.getElementById("botonRevelarBase").addEventListener("click", function(){
+  baseRevelada = true;
+  const datos = dibujarAdivinaBase();
+  mensajeAdivinaBase.textContent = "La base mide " + datos.base.toFixed(2) + " (Área del cuadrado verde: " + (datos.base*datos.base).toFixed(2) + ")";
+  mensajeAdivinaBase.className = "mensaje";
+});
+
+dibujarAdivinaBase();
+
+/* ---------- Adivina el jaigt (conoces la base y la hipotenusa) ---------- */
+const lienzoJaigt = document.getElementById("lienzoAdivinaJaigt");
+const sliderBaseJaigt = document.getElementById("sliderBaseJaigt");
+const sliderHipJaigt = document.getElementById("sliderHipJaigt");
+const valorBaseJaigt = document.getElementById("valorBaseJaigt");
+const valorHipJaigt = document.getElementById("valorHipJaigt");
+const inputAdivinaJaigt = document.getElementById("inputAdivinaJaigt");
+const mensajeAdivinaJaigt = document.getElementById("mensajeAdivinaJaigt");
+let jaigtRevelado = false;
+
+function ajustarLimiteHipJaigt(){
+  const base = parseFloat(sliderBaseJaigt.value);
+  const minHip = (base + 0.5).toFixed(1);
+  sliderHipJaigt.min = minHip;
+  if(parseFloat(sliderHipJaigt.value) < parseFloat(minHip)){
+    sliderHipJaigt.value = minHip;
+  }
+}
+
+function dibujarAdivinaJaigt(){
+  ajustarLimiteHipJaigt();
+  lienzoJaigt.innerHTML = "";
+  const base = parseFloat(sliderBaseJaigt.value);
+  const c = parseFloat(sliderHipJaigt.value);
+  const jaigt = Math.sqrt(Math.max(c*c - base*base, 0));
+
+  valorBaseJaigt.textContent = base.toFixed(1);
+  valorHipJaigt.textContent = c.toFixed(1);
+
+  const Ax = origenX, Ay = origenY;
+  const Bx = origenX + base*escala, By = origenY;
+  const Cx = origenX, Cy = origenY - jaigt*escala;
+  const refX = (Ax+Bx+Cx)/3, refY = (Ay+By+Cy)/3;
+
+  const cuadC = cuadradoSobreSegmento(Bx, By, Cx, Cy, refX, refY, "#FFFF00", (c*c).toFixed(2));
+  lienzoJaigt.appendChild(cuadC);
+
+  const cuadB = cuadradoSobreSegmento(Ax, Ay, Bx, By, refX, refY, "#00FF23", (base*base).toFixed(2));
+  lienzoJaigt.appendChild(cuadB);
+  if(jaigtRevelado){
+    const cuadA = cuadradoSobreSegmento(Ax, Ay, Cx, Cy, refX, refY, "#FF0000", (jaigt*jaigt).toFixed(2));
+    lienzoJaigt.appendChild(cuadA);
+  }
+
+  lienzoJaigt.appendChild(crearElemento("polygon", {
+    points:`${Ax},${Ay} ${Bx},${By} ${Cx},${Cy}`, fill:"#F2F2F2", stroke:"#2C3E50", "stroke-width":"3"
+  }));
+  lienzoJaigt.appendChild(crearElemento("path", {
+    d:`M ${Ax} ${Ay-18} L ${Ax+18} ${Ay-18} L ${Ax+18} ${Ay}`, fill:"none", stroke:"#2C3E50", "stroke-width":"2.5"
+  }));
+
+  const etJaigt = crearElemento("text", {
+    x:Ax+16, y:(Ay+Cy)/2, fill:"#C40000", "font-family":"Arial, sans-serif", "font-size":"18", "font-weight":"700"
+  });
+  etJaigt.textContent = jaigtRevelado ? ("jaigt = " + jaigt.toFixed(2)) : "jaigt = ?";
+  lienzoJaigt.appendChild(etJaigt);
+
+  const etBase = crearElemento("text", {
+    x:(Ax+Bx)/2, y:Ay-12, fill:"#2C3E50", "font-family":"Arial, sans-serif", "font-size":"16", "font-weight":"700", "text-anchor":"middle"
+  });
+  etBase.textContent = "base = " + base.toFixed(1);
+  lienzoJaigt.appendChild(etBase);
+
+  const mx=(Bx+Cx)/2, my=(By+Cy)/2;
+  const etHip = crearElemento("text", {
+    x:mx+16, y:my-6, fill:"#2C3E50", "font-family":"Arial, sans-serif", "font-size":"16", "font-weight":"700"
+  });
+  etHip.textContent = "hip = " + c.toFixed(1);
+  lienzoJaigt.appendChild(etHip);
+
+  return {base:base, c:c, jaigt:jaigt};
+}
+
+sliderBaseJaigt.addEventListener("input", function(){ jaigtRevelado=false; mensajeAdivinaJaigt.textContent=""; mensajeAdivinaJaigt.className="mensaje"; dibujarAdivinaJaigt(); });
+sliderHipJaigt.addEventListener("input", function(){ jaigtRevelado=false; mensajeAdivinaJaigt.textContent=""; mensajeAdivinaJaigt.className="mensaje"; dibujarAdivinaJaigt(); });
+
+document.getElementById("botonComprobarJaigt").addEventListener("click", function(){
+  const datos = dibujarAdivinaJaigt();
+  const respuesta = parseFloat(inputAdivinaJaigt.value);
+  if(isNaN(respuesta)){
+    mensajeAdivinaJaigt.textContent = "Escribe un número primero.";
+    mensajeAdivinaJaigt.className = "mensaje mal";
+    return;
+  }
+  const areaJaigt = datos.jaigt * datos.jaigt;
+  if(Math.abs(respuesta - datos.jaigt) < 0.1 || Math.abs(respuesta - areaJaigt) < 0.1){
+    mensajeAdivinaJaigt.textContent = "¡Correcto! El jaigt mide " + datos.jaigt.toFixed(2) + " (Área del cuadrado rojo: " + areaJaigt.toFixed(2) + ")";
+    mensajeAdivinaJaigt.className = "mensaje ok";
+    jaigtRevelado = true;
+    dibujarAdivinaJaigt();
+  } else {
+    mensajeAdivinaJaigt.textContent = "No es correcto, inténtalo de nuevo.";
+    mensajeAdivinaJaigt.className = "mensaje mal";
+  }
+});
+
+document.getElementById("botonRevelarJaigt").addEventListener("click", function(){
+  jaigtRevelado = true;
+  const datos = dibujarAdivinaJaigt();
+  mensajeAdivinaJaigt.textContent = "El jaigt mide " + datos.jaigt.toFixed(2) + " (Área del cuadrado rojo: " + (datos.jaigt*datos.jaigt).toFixed(2) + ")";
+  mensajeAdivinaJaigt.className = "mensaje";
+});
+
+dibujarAdivinaJaigt();
 
 const lienzoEscalera = document.getElementById("lienzoEscalera");
 const sliderDistancia = document.getElementById("sliderDistancia");
